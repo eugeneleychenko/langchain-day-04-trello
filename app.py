@@ -45,6 +45,7 @@ def main():
             cards = get_trello_cards(selected_board)
             for card in cards:
                 st.write(f"**Card Name:** {card.name}")
+                st.write(f"**Card URL:** {card.url}")  # This adds the card URL
                 st.write(f"**Card Description:** {card.description}")
                 list = get_list_from_card(selected_board, card)
                 st.write(f"**Card List:** {list.name}")
