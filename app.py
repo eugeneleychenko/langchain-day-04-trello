@@ -1,12 +1,11 @@
 import streamlit as st
 from trello import TrelloClient
 
-def get_trello_cards(client, board_name):
-    all_boards = client.list_boards()
-    for board in all_boards:
-        if board.name == board_name:
-            return board.all_cards()
-    return []
+def get_trello_boards(client):
+    return client.list_boards()
+
+def get_trello_cards(board):
+    return board.all_cards()
 
 def main():
     st.title('Trello Board Viewer')
@@ -14,20 +13,27 @@ def main():
     api_key = st.text_input('Enter your Trello API Key', type='password')
     # api_secret = st.text_input('Enter your Trello API Secret', type='password')
     token = st.text_input('Enter your Trello Token', type='password')
-    # token_secret = st.text_input('Enter your Trello Token Secret', type='password')
-    board_name = st.text_input('Enter the name of the board you want to view')
 
-    if st.button('Get Cards'):
+    if api_key  and token:
         client = TrelloClient(
             api_key=api_key,
             # api_secret=api_secret,
-            token=token,
-            # token_secret=token_secret
+            token=token
         )
 
-        cards = get_trello_cards(client, board_name)
-        for card in cards:
-            st.write(card.name)
+        boards = get_trello_boards(client)
+        board_names = [board.name for board in boards]
+        selected_board_name = st.selectbox('Select a board', board_names)
+
+        for board in boards:
+            if board.name == selected_board_name:
+                selected_board = board
+                break
+
+        if st.button('Get Cards'):
+            cards = get_trello_cards(selected_board)
+            for card in cards:
+                st.write(card.name)
 
 if __name__ == "__main__":
     main()
